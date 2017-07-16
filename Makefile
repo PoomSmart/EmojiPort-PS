@@ -9,8 +9,6 @@ endif
 
 include $(THEOS)/makefiles/common.mk
 
-ifeq ($(SIMULATOR),1)
-
 LIBRARY_NAME = Emoji10PSReal
 Emoji10PSReal_FILES = TweakReal.xm
 Emoji10PSReal_INSTALL_PATH = /Library/Application Support/Emoji10PS
@@ -19,8 +17,8 @@ Emoji10PSReal_LIBRARIES = EmojiLibrary
 Emoji10PSReal_USE_SUBSTRATE = 1
 
 include $(THEOS_MAKE_PATH)/library.mk
-else
 
+ifneq ($(SIMULATOR),1)
 TWEAK_NAME = Emoji10PS
 Emoji10PS_FILES = Tweak.xm
 
