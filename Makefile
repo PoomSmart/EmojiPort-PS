@@ -1,4 +1,4 @@
-DEBUG = 0
+PACKAGE_VERSION = 1.5.2
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:9.0
@@ -7,19 +7,29 @@ else
 	TARGET = iphone:latest:9.0
 endif
 
-PACKAGE_VERSION = 1.5.1
-
 include $(THEOS)/makefiles/common.mk
+
+ifeq ($(SIMULATOR),1)
+
+LIBRARY_NAME = Emoji10PSReal
+Emoji10PSReal_FILES = TweakReal.xm
+Emoji10PSReal_INSTALL_PATH = /Library/Application Support/Emoji10PS
+Emoji10PSReal_EXTRA_FRAMEWORKS = CydiaSubstrate
+Emoji10PSReal_LIBRARIES = EmojiLibrary
+Emoji10PSReal_USE_SUBSTRATE = 1
+
+include $(THEOS_MAKE_PATH)/library.mk
+else
 
 TWEAK_NAME = Emoji10PS
 Emoji10PS_FILES = Tweak.xm
-Emoji10PS_USE_SUBSTRATE = 1
 
 include $(THEOS_MAKE_PATH)/tweak.mk
+endif
 
 ifeq ($(SIMULATOR),1)
-all::
-	@rm -f /opt/simject/$(TWEAK_NAME).dylib
-	@cp -v $(THEOS_OBJ_DIR)/$(TWEAK_NAME).dylib /opt/simject
-	@cp -v $(PWD)/$(TWEAK_NAME).plist /opt/simject
+setup:: clean all
+	@rm -f /opt/simject/Emoji10PS.dylib
+	@cp -v $(THEOS_OBJ_DIR)/$(LIBRARY_NAME).dylib /opt/simject/Emoji10PS.dylib
+	@cp -v $(PWD)/Emoji10PS.plist /opt/simject
 endif

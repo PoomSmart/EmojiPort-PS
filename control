@@ -1,8 +1,8 @@
 Package: com.ps.emoji10ps
 Name: Emoji10 (iOS 9.0-9.3)
-Depends: mobilesubstrate, firmware (>= 9.0), firmware (<< 10.0), com.ps.emojiattributes, firmware (>= 9.1) | com.ps.emojilocalization, firmware (>= 9.1) | com.ps.emojiresources
+Depends: mobilesubstrate, firmware (>= 9.0), firmware (<< 10.0), com.ps.emojiattributes, com.ps.emojilibrary, firmware (>= 9.1) | com.ps.emojilocalization, firmware (>= 9.1) | com.ps.emojiresources
 Conflicts: org.thebigboss.emoji83plus, com.hamzasood.emoji9, com.ps.emoji9ps
-Version: 1.0
+Version: 1.0.0
 Architecture: iphoneos-arm
 Description: Latest emojis for iOS 9.0-9.3
 Maintainer: PoomSmart
