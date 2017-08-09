@@ -13,7 +13,7 @@ BOOL iOS91Up;
     NSArray <UIKeyboardEmoji *> *emojiForType = categoryForType.emoji;
     if (emojiForType.count)
         return categoryForType;
-    NSArray <NSString *> *emojiArray = [PSEmojiUtilities PrepolulatedEmoji];
+    NSArray <NSString *> *emojiArray = nil;
     switch (categoryType) {
         case 0: {
             NSMutableArray *recents = [self emojiRecentsFromPreferences];
@@ -56,10 +56,12 @@ BOOL iOS91Up;
             emojiArray = [PSEmojiUtilities FlagsEmoji];
             break;
     }
-    NSMutableArray <UIKeyboardEmoji *> *_emojiArray = [NSMutableArray arrayWithCapacity:emojiArray.count];
-    for (NSString *emojiString in emojiArray)
-        [PSEmojiUtilities addEmoji:_emojiArray emojiString:emojiString withVariantMask:[PSEmojiUtilities hasVariantsForEmoji:emojiString]];
-    categoryForType.emoji = _emojiArray;
+    if (emojiArray) {
+        NSMutableArray <UIKeyboardEmoji *> *_emojiArray = [NSMutableArray arrayWithCapacity:emojiArray.count];
+        for (NSString *emojiString in emojiArray)
+            [PSEmojiUtilities addEmoji:_emojiArray emojiString:emojiString withVariantMask:[PSEmojiUtilities hasVariantsForEmoji:emojiString]];
+        categoryForType.emoji = _emojiArray;
+    }
     return categoryForType;
 }
 
@@ -84,43 +86,7 @@ BOOL iOS91Up;
 %hook UIKeyboardEmojiCollectionInputView
 
 - (UIKeyboardEmojiCollectionViewCell *)collectionView: (UICollectionView *)collectionView_ cellForItemAtIndexPath: (NSIndexPath *)indexPath {
-    UIKeyboardEmojiCollectionView *collectionView(MSHookIvar<UIKeyboardEmojiCollectionView *>(self, "_collectionView"));
-    UIKeyboardEmojiCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"kEmojiCellIdentifier" forIndexPath:indexPath];
-    if (indexPath.section == 0) {
-        NSArray <UIKeyboardEmoji *> *recents = collectionView.inputController.recents;
-        NSArray <UIKeyboardEmoji *> *prepolulatedEmojis = ((UIKeyboardEmojiCategory *)[NSClassFromString(@"UIKeyboardEmojiCategory") categoryForType:9]).emoji;
-        NSUInteger prepolulatedCount = [MSHookIvar<UIKeyboardEmojiGraphicsTraits *>(self, "_emojiGraphicsTraits")prepolulatedRecentCount];
-        NSRange range = NSMakeRange(0, prepolulatedCount);
-        if (recents.count) {
-            NSUInteger idx = 0;
-            NSMutableArray <UIKeyboardEmoji *> *array = [NSMutableArray arrayWithArray:recents];
-            if (array.count < prepolulatedCount) {
-                while (idx < prepolulatedEmojis.count && prepolulatedCount != array.count)
-                    [array addObject:prepolulatedEmojis[idx++]];
-            }
-            cell.emoji = [array subarrayWithRange:range][indexPath.item];
-        } else
-            cell.emoji = [prepolulatedEmojis subarrayWithRange:range][indexPath.item];
-    } else {
-        NSInteger section = indexPath.section;
-        if (iOS91Up)
-            section = [NSClassFromString(@"UIKeyboardEmojiCategory") categoryTypeForCategoryIndex:section];
-        UIKeyboardEmojiCategory *category = [NSClassFromString(@"UIKeyboardEmojiCategory") categoryForType:section];
-        NSArray <UIKeyboardEmoji *> *emojis = category.emoji;
-        cell.emoji = emojis[indexPath.item];
-        if ([PSEmojiUtilities sectionHasSkin:section]) {
-            NSMutableDictionary <NSString *, NSString *> *skinPrefs = [collectionView.inputController skinToneBaseKeyPreferences];
-            if (skinPrefs && cell.emoji.variantMask & PSEmojiTypeSkin) {
-                NSString *skinned = skinPrefs[[PSEmojiUtilities emojiBaseString:cell.emoji.emojiString]];
-                if (skinned) {
-                    cell.emoji.emojiString = skinned;
-                    cell.emoji = cell.emoji;
-                }
-            }
-        }
-    }
-    cell.emojiFontSize = [collectionView emojiGraphicsTraits].emojiKeyWidth;
-    return cell;
+    return [PSEmojiUtilities collectionView:collectionView_ cellForItemAtIndexPath:indexPath inputView:self];
 }
 
 - (NSString *)emojiBaseUnicodeString:(NSString *)string {
