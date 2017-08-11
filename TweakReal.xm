@@ -5,7 +5,7 @@ BOOL iOS91Up;
 
 %hook UIKeyboardEmojiCategory
 
-+ (UIKeyboardEmojiCategory *)categoryForType: (NSInteger)categoryType {
++ (UIKeyboardEmojiCategory *)categoryForType: (PSEmojiCategory)categoryType {
     if (!iOS91Up && categoryType >= CATEGORIES_COUNT)
         return %orig;
     NSArray <UIKeyboardEmojiCategory *> *categories = [self categories];
@@ -15,7 +15,7 @@ BOOL iOS91Up;
         return categoryForType;
     NSArray <NSString *> *emojiArray = nil;
     switch (categoryType) {
-        case 0: {
+        case PSEmojiCategoryRecent: {
             NSMutableArray *recents = [self emojiRecentsFromPreferences];
             if (recents) {
                 categoryForType.emoji = recents;
@@ -23,36 +23,36 @@ BOOL iOS91Up;
             }
             break;
         }
-        case 1:
+        case PSEmojiCategoryPeople:
             emojiArray = [PSEmojiUtilities PeopleEmoji];
             break;
-        case 2:
+        case PSEmojiCategoryNature:
             emojiArray = [PSEmojiUtilities NatureEmoji];
             break;
-        case 3:
+        case PSEmojiCategoryFoodAndDrink:
             emojiArray = [PSEmojiUtilities FoodAndDrinkEmoji];
             break;
-        case 10:
-        case 6:
-            if (!iOS91Up || (categoryType == 10 && iOS91Up)) {
+        case PSEmojiCategoryObjects:
+        case IDXPSEmojiCategoryObjects: // == PSEmojiCategoryTravelAndPlaces
+            if (!iOS91Up || (categoryType == PSEmojiCategoryObjects && iOS91Up)) {
                 emojiArray = [PSEmojiUtilities ObjectsEmoji];
                 break;
             }
-        case 5:
-            if (!iOS91Up || (categoryType == 6 && iOS91Up)) {
+        case IDXPSEmojiCategoryTravelAndPlaces: // == PSEmojiCategoryActivity
+            if (!iOS91Up || (categoryType == PSEmojiCategoryTravelAndPlaces && iOS91Up)) {
                 emojiArray = [PSEmojiUtilities TravelAndPlacesEmoji];
                 break;
             }
-        case 4:
+        case IDXPSEmojiCategoryActivity:
             emojiArray = [PSEmojiUtilities ActivityEmoji];
             break;
-        case 11:
-        case 7:
-            if (!iOS91Up || (categoryType == 11 && iOS91Up)) {
+        case PSEmojiCategorySymbols:
+        case PSEmojiCategoryFlags:
+            if (!iOS91Up || (categoryType == PSEmojiCategorySymbols && iOS91Up)) {
                 emojiArray = [PSEmojiUtilities SymbolsEmoji];
                 break;
             }
-        case 8:
+        case IDXPSEmojiCategoryFlags:
             emojiArray = [PSEmojiUtilities FlagsEmoji];
             break;
     }
