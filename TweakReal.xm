@@ -16,7 +16,7 @@ BOOL iOS91Up;
     NSArray <NSString *> *emojiArray = nil;
     switch (categoryType) {
         case PSEmojiCategoryRecent: {
-            NSMutableArray *recents = [self emojiRecentsFromPreferences];
+            NSMutableArray <UIKeyboardEmoji *> *recents = [self emojiRecentsFromPreferences];
             if (recents) {
                 categoryForType.emoji = recents;
                 return categoryForType;
