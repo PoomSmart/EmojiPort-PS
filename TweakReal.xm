@@ -5,7 +5,7 @@ BOOL iOS91Up;
 
 %hook UIKeyboardEmojiCategory
 
-+ (UIKeyboardEmojiCategory *)categoryForType: (PSEmojiCategory)categoryType {
++ (UIKeyboardEmojiCategory *)categoryForType:(PSEmojiCategory)categoryType {
     if (!iOS91Up && categoryType >= CATEGORIES_COUNT)
         return %orig;
     NSArray <UIKeyboardEmojiCategory *> *categories = [self categories];
@@ -83,9 +83,18 @@ BOOL iOS91Up;
 
 %end
 
+%hook UIKeyboardEmojiCollectionViewCell
+
+- (void)setEmojiFontSize:(NSInteger)fontSize {
+    if (fontSize != self.emojiFontSize)
+        %orig;
+}
+
+%end
+
 %hook UIKeyboardEmojiCollectionInputView
 
-- (UIKeyboardEmojiCollectionViewCell *)collectionView: (UICollectionView *)collectionView_ cellForItemAtIndexPath: (NSIndexPath *)indexPath {
+- (UIKeyboardEmojiCollectionViewCell *)collectionView:(UICollectionView *)collectionView_ cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     return [PSEmojiUtilities collectionView:collectionView_ cellForItemAtIndexPath:indexPath inputView:self];
 }
 
@@ -106,8 +115,8 @@ BOOL overrideNewVariant = NO;
 
 %hook UIKBTree
 
-- (void)setRepresentedString: (NSString *)string {
-    %orig([PSEmojiUtilities overrideKBTreeEmoji:string overrideNewVariant:overrideNewVariant]);
+- (void)setRepresentedString:(NSString *)string {
+    %orig(overrideNewVariant ? [PSEmojiUtilities overrideKBTreeEmoji:string] : string);
 }
 
 %end
