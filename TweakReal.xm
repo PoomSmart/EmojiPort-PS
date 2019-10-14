@@ -102,32 +102,10 @@ BOOL iOS91Up;
     return [PSEmojiUtilities emojiBaseString:string];
 }
 
-BOOL overrideNewVariant = NO;
-
-- (id)subTreeHitTest:(CGPoint)point {
-    overrideNewVariant = YES;
-    id r = %orig;
-    overrideNewVariant = NO;
-    return r;
-}
-
-%end
-
-%hook UIKBTree
-
-- (void)setRepresentedString:(NSString *)string {
-    %orig(overrideNewVariant ? [PSEmojiUtilities overrideKBTreeEmoji:string] : string);
-}
-
 %end
 
 %ctor {
     iOS91Up = isiOS91Up;
-#if TARGET_OS_SIMULATOR
-    dlopen("/opt/simject/EmojiAttributes.dylib", RTLD_LAZY);
-    if (!iOS91Up)
-        dlopen("/opt/simject/EmojiLocalization.dylib", RTLD_LAZY);
-#endif
     %init;
     if (!iOS91Up) {
         %init(preiOS91);
