@@ -1,39 +1,35 @@
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import <UIKit/UIKBTree.h>
 
+@interface UIKeyboardEmojiCollectionInputView (Hack)
+- (BOOL)pointInside:(CGPoint)point forEvent:(void *)event;
+@end
+
 BOOL overrideNewVariant = NO;
 
 %hook UIKeyboardEmojiCollectionInputView
 
 - (UIKBTree *)subTreeHitTest:(CGPoint)point {
     overrideNewVariant = YES;
+    BOOL hackVariant = NO;
+    BOOL inside = [self pointInside:point forEvent:NULL];
+    UIKeyboardEmojiCollectionViewCell *cell = nil;
+    if (inside) {
+        UIKeyboardEmojiCollectionView *collectionView = [self valueForKey:@"_collectionView"];
+        CGPoint target = [collectionView convertPoint:point fromView:self];
+        cell = [collectionView closestCellForPoint:target];
+        hackVariant = cell && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:cell.emoji.emojiString];
+    }
+    if (hackVariant)
+        cell.emoji.variantMask = 2;
     UIKBTree *tree = %orig;
     overrideNewVariant = NO;
     NSString *emojiString = tree.representedString;
-    NSUInteger type = [[PSEmojiUtilities CoupleMultiSkinToneEmoji] indexOfObject:emojiString];
-    if (type != NSNotFound) {
-        NSMutableArray *variants = [NSMutableArray array];
-        BOOL first = YES;
-        BOOL ipad = IS_IPAD;
-        for (NSString *leftSkin in [PSEmojiUtilities skinModifiers]) {
-            if (first || ipad)
-                [variants addObject:first ? emojiString : @""];
-            first = NO;
-            for (NSString *rightSkin in [PSEmojiUtilities skinModifiers]) {
-                switch (type) {
-                    case 0:
-                        [variants addObject:[NSString stringWithFormat:@"👩%@‍🤝‍👩%@", leftSkin, rightSkin]];
-                        break;
-                    case 1:
-                        [variants addObject:[NSString stringWithFormat:@"👨%@‍🤝‍👨%@", leftSkin, rightSkin]];
-                        break;
-                    case 2:
-                        [variants addObject:[NSString stringWithFormat:@"👩%@‍🤝‍👨%@", leftSkin, rightSkin]];
-                        break;
-                }
-            }
-        }
-        if (ipad) {
+    NSMutableArray *variants = [PSEmojiUtilities coupleSkinToneVariants:emojiString];
+    if (variants) {
+        if (IS_IPAD) {
+            for (int i = 20; i > 0; i -= 5)
+                [variants insertObject:@"" atIndex:i];
             NSMutableArray *trueVariants = [NSMutableArray array];
             for (NSInteger index = 0; index < 30; ++index) {
                 NSInteger insertIndex = ((index % 5) * 6) + (index / 5);
@@ -41,6 +37,7 @@ BOOL overrideNewVariant = NO;
             }
             variants = trueVariants;
         }
+        [variants insertObject:emojiString atIndex:0];
         [tree.subtrees removeAllObjects];
         for (NSString *variant in variants) {
             UIKBTree *subtree = [%c(UIKBTree) treeOfType:8];
@@ -52,6 +49,8 @@ BOOL overrideNewVariant = NO;
             [tree.subtrees addObject:subtree];
         }
     }
+    if (hackVariant)
+        cell.emoji.variantMask = 0;
     return tree;
 }
 
