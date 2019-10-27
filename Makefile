@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.5.9~b2
+PACKAGE_VERSION = 1.6.0
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:9.0
@@ -12,7 +12,7 @@ include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = EmojiPortPSReal
 EmojiPortPSReal_FILES = TweakReal.xm UIKBTreeHack.xm
-EmojiPortPSReal_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPortPS
+EmojiPortPSReal_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 EmojiPortPSReal_EXTRA_FRAMEWORKS = CydiaSubstrate
 EmojiPortPSReal_LIBRARIES = EmojiLibrary
 EmojiPortPSReal_USE_SUBSTRATE = 1
