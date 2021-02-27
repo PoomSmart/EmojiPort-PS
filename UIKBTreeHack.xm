@@ -1,9 +1,6 @@
 #import "../EmojiLibrary/PSEmojiUtilities.h"
 #import <UIKit/UIKBTree.h>
-
-@interface UIKeyboardEmojiCollectionInputView (Hack)
-- (BOOL)pointInside:(CGPoint)point forEvent:(void *)event;
-@end
+#import <theos/IOSMacros.h>
 
 BOOL overrideNewVariant = NO;
 
@@ -25,7 +22,7 @@ BOOL overrideNewVariant = NO;
     UIKBTree *tree = %orig;
     overrideNewVariant = NO;
     NSString *emojiString = tree.representedString;
-    NSMutableArray *variants = [PSEmojiUtilities coupleSkinToneVariants:emojiString];
+    NSMutableArray <NSString *> *variants = [PSEmojiUtilities skinToneVariants:emojiString];
     if (variants) {
         if (IS_IPAD) {
             for (int i = 20; i > 0; i -= 5)

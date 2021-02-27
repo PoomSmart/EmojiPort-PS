@@ -1,5 +1,6 @@
-#import "../PS.h"
+#import "../PSHeader/iOSVersions.h"
 #import "../EmojiLibrary/PSEmojiUtilities.h"
+#import <theos/IOSMacros.h>
 
 BOOL iOS91Up;
 
@@ -105,7 +106,7 @@ BOOL iOS91Up;
 %end
 
 %ctor {
-    iOS91Up = isiOS91Up;
+    iOS91Up = IS_IOS_OR_NEWER(iOS_9_1);
     %init;
     if (!iOS91Up) {
         %init(preiOS91);
