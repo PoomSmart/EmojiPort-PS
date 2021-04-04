@@ -24,17 +24,22 @@ BOOL overrideNewVariant = NO;
     NSString *emojiString = tree.representedString;
     NSMutableArray <NSString *> *variants = [PSEmojiUtilities skinToneVariants:emojiString];
     if (variants) {
-        if (IS_IPAD) {
-            for (int i = 20; i > 0; i -= 5)
-                [variants insertObject:@"" atIndex:i];
-            NSMutableArray *trueVariants = [NSMutableArray array];
-            for (NSInteger index = 0; index < 30; ++index) {
-                NSInteger insertIndex = ((index % 5) * 6) + (index / 5);
-                [trueVariants addObject:variants[insertIndex]];
+        if (hackVariant) {
+            if (IS_IPAD) {
+                for (int i = 20; i > 0; i -= 5)
+                    [variants insertObject:@"" atIndex:i];
+                [variants insertObject:emojiString atIndex:0];
+                NSMutableArray *trueVariants = [NSMutableArray array];
+                for (NSInteger index = 0; index < 30; ++index) {
+                    NSInteger insertIndex = ((index % 5) * 6) + (index / 5);
+                    [trueVariants addObject:variants[insertIndex]];
+                }
+                variants = trueVariants;
             }
-            variants = trueVariants;
+        } else {
+            NSString *baseString = [PSEmojiUtilities emojiBaseString:emojiString];
+            [variants insertObject:baseString atIndex:0];
         }
-        [variants insertObject:emojiString atIndex:0];
         [tree.subtrees removeAllObjects];
         for (NSString *variant in variants) {
             UIKBTree *subtree = [%c(UIKBTree) treeOfType:8];
@@ -57,6 +62,39 @@ BOOL overrideNewVariant = NO;
 
 - (void)setRepresentedString:(NSString *)string {
     %orig(overrideNewVariant ? [PSEmojiUtilities overrideKBTreeEmoji:string] : string);
+}
+
+%end
+
+%hook UIKBRenderFactory
+
+- (void)modifyTraitsForDividerVariant:(id)variant withKey:(UIKBTree *)key {
+    if ([PSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString])
+        return;
+    %orig;
+}
+
+%end
+
+%hook UIKBRenderFactoryiPad
+
+- (NSInteger)rowLimitForKey:(UIKBTree *)tree {
+    if ([tree.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:tree.displayString])
+        return 6;
+    return %orig;
+}
+
+%end
+
+%hook UIKBRenderFactoryiPhone
+
+- (void)_configureTraitsForPopupStyle:(id)style withKey:(UIKBTree *)key onKeyplane:(id)keyplane {
+    BOOL isEmoji = [key.name isEqualToString:@"EmojiPopupKey"] && [PSEmojiUtilities isCoupleMultiSkinToneEmoji:key.displayString];
+    if (isEmoji)
+        key.name = @"EmojiPopupKey2";
+    %orig(style, key, keyplane);
+    if (isEmoji)
+        key.name = @"EmojiPopupKey";
 }
 
 %end
