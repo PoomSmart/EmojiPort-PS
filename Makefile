@@ -1,4 +1,4 @@
-PACKAGE_VERSION = 1.6.6
+PACKAGE_VERSION = 1.6.7
 
 ifeq ($(SIMULATOR),1)
 	TARGET = simulator:clang:latest:9.0
@@ -20,8 +20,9 @@ $(LIBRARY_NAME)_USE_SUBSTRATE = 1
 
 include $(THEOS_MAKE_PATH)/library.mk
 
-ifneq ($(SIMULATOR),1)
 TWEAK_NAME = EmojiPortPS
+
+ifneq ($(SIMULATOR),1)
 $(TWEAK_NAME)_FILES = Tweak.x
 $(TWEAK_NAME)_CFLAGS = -fobjc-arc
 
@@ -30,7 +31,7 @@ endif
 
 ifeq ($(SIMULATOR),1)
 setup:: clean all
-	@rm -f /opt/simject/EmojiPortPS.dylib
-	@cp -v $(THEOS_OBJ_DIR)/$(LIBRARY_NAME).dylib /opt/simject/EmojiPortPS.dylib
-	@cp -v $(PWD)/EmojiPortPS.plist /opt/simject
+	@rm -f /opt/simject/$(TWEAK_NAME).dylib
+	@cp -v $(THEOS_OBJ_DIR)/$(LIBRARY_NAME).dylib /opt/simject/$(TWEAK_NAME).dylib
+	@cp -v $(PWD)/$(TWEAK_NAME).plist /opt/simject
 endif
