@@ -1,17 +1,17 @@
-PACKAGE_VERSION = 1.6.7
+PACKAGE_VERSION = 1.7.0
 
 ifeq ($(SIMULATOR),1)
-	TARGET = simulator:clang:latest:9.0
+	TARGET = simulator:clang:latest:8.0
 	ARCHS = x86_64 i386
 else
-	TARGET = iphone:clang:latest:9.0
+	TARGET = iphone:clang:latest:8.0
 	ARCHS = armv7 arm64
 endif
 
 include $(THEOS)/makefiles/common.mk
 
 LIBRARY_NAME = EmojiPortPSReal
-$(LIBRARY_NAME)_FILES = TweakReal.x UIKBTreeHack.x
+$(LIBRARY_NAME)_FILES = TweakReal.xm UIKBTreeHack.x
 $(LIBRARY_NAME)_CFLAGS = -fobjc-arc
 $(LIBRARY_NAME)_INSTALL_PATH = /Library/MobileSubstrate/DynamicLibraries/EmojiPort
 $(LIBRARY_NAME)_EXTRA_FRAMEWORKS = CydiaSubstrate
