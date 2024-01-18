@@ -1,4 +1,4 @@
-#import "../EmojiLibrary/PSEmojiUtilities.h"
+#import <EmojiLibrary/PSEmojiUtilities.h>
 #import <UIKit/UIKBTree.h>
 #import <theos/IOSMacros.h>
 

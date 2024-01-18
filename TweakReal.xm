@@ -1,9 +1,9 @@
 #import <substrate.h>
-#import "../PSHeader/iOSVersions.h"
-#import "../EmojiLibrary/PSEmojiUtilities.h"
+#import <EmojiLibrary/PSEmojiUtilities.h>
 #import <UIKit/UIKBScreenTraits.h>
 #import <UIKit/UIKBTree.h>
 #import <theos/IOSMacros.h>
+#import <version.h>
 
 BOOL iOS91Up;
 
