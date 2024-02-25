@@ -1,7 +1,7 @@
-#import <substrate.h>
 #import <EmojiLibrary/PSEmojiUtilities.h>
 #import <UIKit/UIKBScreenTraits.h>
 #import <UIKit/UIKBTree.h>
+#import <substrate.h>
 #import <theos/IOSMacros.h>
 #import <version.h>
 

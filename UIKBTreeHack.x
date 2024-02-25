@@ -22,7 +22,7 @@ BOOL overrideNewVariant = NO;
     UIKBTree *tree = %orig;
     overrideNewVariant = NO;
     NSString *emojiString = tree.representedString;
-    NSMutableArray <NSString *> *variants = [PSEmojiUtilities skinToneVariants:emojiString];
+    NSMutableArray <NSString *> *variants = [PSEmojiUtilities skinToneVariantsForString:emojiString withSelf:NO];
     if (variants) {
         if (hackVariant) {
             if (IS_IPAD) {
